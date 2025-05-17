@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Go Slice Sum & Average</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #f9f9f9, #e0f7fa);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+        }
+
+        h1 {
+            color: #00796B;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            width: 300px;
+            padding: 12px 20px;
+            font-size: 16px;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            transition: 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: #00796B;
+            outline: none;
+            box-shadow: 0 0 10px rgba(0, 121, 107, 0.2);
+        }
+
+        button {
+            background-color: #00796B;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            margin-top: 15px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s;
+        }
+
+        button:hover {
+            background-color: #004D40;
+            transform: scale(1.05);
+        }
+
+        #result {
+            margin-top: 30px;
+            padding: 20px;
+            width: 350px;
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            text-align: center;
+            color: #333;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <h1>Slice Sum & Average Calculator</h1>
+
+    <input type="text" id="input" placeholder="Enter numbers e.g. 1,2,3,4,5">
+    <br>
+    <button onclick="sendData()">Calculate</button>
+
+    <div id="result" style="display: none;"></div>
+
+    <script>
+        function sendData() {
+            const inputField = document.getElementById("input");
+            const resultBox = document.getElementById("result");
+            const input = inputField.value;
+            const numbers = input.split(',').map(num => parseInt(num.trim())).filter(n => !isNaN(n));
+
+            if (numbers.length === 0) {
+                resultBox.innerText = "Please enter valid numbers!";
+                resultBox.style.display = "block";
+                resultBox.style.backgroundColor = "#ffe0e0";
+                return;
+            }
+
+            fetch("/calculate", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ numbers: numbers })
+            })
+            .then(response => response.json())
+            .then(data => {
+                resultBox.style.display = "block";
+                resultBox.style.backgroundColor = "#e0f7fa";
+                resultBox.innerText = `Sum: ${data.sum}\nAverage: ${data.average.toFixed(2)}`;
+            })
+            .catch(error => {
+                resultBox.style.display = "block";
+                resultBox.style.backgroundColor = "#ffe0e0";
+                resultBox.innerText = "Something went wrong. Please try again.";
+                console.error("Error:", error);
+            });
+        }
+    </script>
+</body>
+</html>
